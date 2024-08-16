@@ -16,7 +16,7 @@ spec:
     namespace: app
   project: default
   source:
-    path: helm-chart/nginx
+    path: ../helm-chart/nginx
     helm:
       releaseName: nginx-app-1
       valueFiles:
