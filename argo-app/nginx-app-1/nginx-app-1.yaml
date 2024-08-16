@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-app
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  ignoreDifferences:
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+      jqPathExpressions:
+        - .spec.metrics[].resource.name | select((. == "cpu") or (. == "memory"))
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+  project: default
+  source:
+    path: helm-chart/nginx
+    helm:
+      releaseName: nginx-app-1
+      valueFiles:
+        - ../../helm-values/values.yaml
+    repoURL: git@github.com:chanduych/argo-helm.git
+    targetRevision: main
+  syncPolicy:
+    automated: 
+      prune: false
+      selfHeal: false
